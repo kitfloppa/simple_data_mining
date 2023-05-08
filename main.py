@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-
-from generator.entities import Entity
-
+from generator.mkb import MKB
 
 def main() -> None:
-    print(Entity('Test'))
+    mkb = MKB()
+    print(mkb)
 
 
 if __name__ == '__main__':
