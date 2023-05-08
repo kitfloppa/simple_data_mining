@@ -19,8 +19,8 @@ class EntityProperty:
         self.__alias = alias
         self.__borders = []
         self.__value_period = []
-        self.possible_values = []
-        self.normal_value = None
+        self.__possible_values = []
+        self.__normal_value = []
         self.number_trend_periods = number_trend_periods
 
         lower_bound_one = False
@@ -42,11 +42,11 @@ class EntityProperty:
         
         if type == 0:
             self.__type = 'bool'
-            self.possible_values = [True, False]
-            self.normal_value = self.__rng.choice(self.possible_values, size=1)[0]
+            self.__possible_values = [True, False]
+            self.__normal_value = [self.__rng.choice(self.__possible_values, size=1)[0]]
 
             for i in range(self.number_trend_periods):
-                self.__value_period.append(self.possible_values[i % len(self.possible_values)])
+                self.__value_period.append(self.__possible_values[i % len(self.__possible_values)])
         elif type == 1:
             self.__type = 'enumerate'
 
@@ -58,10 +58,10 @@ class EntityProperty:
             else:
                 values_positions = self.__rng.choice(len(possible_val), size=ENUMERATE_COUNT, replace=False)
             
-            self.possible_values = [possible_val[i] for i in values_positions]
+            self.__possible_values = [possible_val[i] for i in values_positions]
 
-            self.normal_value = self.__rng.choice(self.possible_values, 
-                                                  size=self.__rng.integers(low=1, high=len(self.possible_values) - 1, size=1)[0])
+            self.__normal_value = list(self.__rng.choice(self.__possible_values, 
+                                                  size=self.__rng.integers(low=1, high=len(self.__possible_values) - 1, size=1)[0]))
 
             values_positions = self.__rng.choice(ENUMERATE_COUNT,
                                                          size=self.__rng.integers(low=1, high=ENUMERATE_COUNT - 1, size=1)[0], replace=False)
@@ -80,28 +80,28 @@ class EntityProperty:
                     values_positions = [j for j in range(ENUMERATE_COUNT) if j not in values_positions]
                     values_positions = values_positions[:self.__rng.integers(low=1, high=len(values_positions), size=1)[0]]
 
-                self.__value_period.append([self.possible_values[j] for j in values_positions])
+                self.__value_period.append([self.__possible_values[j] for j in values_positions])
         elif type == 2:
             self.__type = 'interval'
-            self.possible_values = sort(self.__rng.choice(MAX_INTERVAL, size=2, replace=False))
+            self.__possible_values = list(sort(self.__rng.choice(MAX_INTERVAL, size=2, replace=False)))
 
-            while self.possible_values[1] - self.possible_values[0] < MAX_INTERVAL // 1.2:
-                self.possible_values = sort(self.__rng.choice(MAX_INTERVAL, size=2, replace=False))
+            while self.__possible_values[1] - self.__possible_values[0] < MAX_INTERVAL // 1.2:
+                self.__possible_values = list(sort(self.__rng.choice(MAX_INTERVAL, size=2, replace=False)))
 
-            self.normal_value = sort(self.__rng.choice(range(self.possible_values[0], self.possible_values[1]), 
-                                                            size=2))
+            self.__normal_value = list(sort(self.__rng.choice(range(self.__possible_values[0], self.__possible_values[1]), 
+                                                            size=2)))
             
-            min_cur_interval = (self.possible_values[0] + self.possible_values[1]) // 2
+            min_cur_interval = (self.__possible_values[0] + self.__possible_values[1]) // 2
             max_cur_interval = min_cur_interval
 
             for i in range(self.number_trend_periods):
-                cur_interval = sort(self.__rng.choice(range(self.possible_values[0], self.possible_values[1]), 
+                cur_interval = sort(self.__rng.choice(range(self.__possible_values[0], self.__possible_values[1]), 
                                                             size=2))
                 
                 while ((cur_interval[0] >= min_cur_interval and cur_interval[0] <= max_cur_interval) or \
                         (cur_interval[1] >= min_cur_interval and cur_interval[1] <= max_cur_interval)) or \
                         (cur_interval[0] <= min_cur_interval and cur_interval[1] >= min_cur_interval):
-                        cur_interval = sort(self.__rng.choice(range(self.possible_values[0], self.possible_values[1]), 
+                        cur_interval = sort(self.__rng.choice(range(self.__possible_values[0], self.__possible_values[1]), 
                                                                     size=2))
 
                 min_cur_interval, max_cur_interval = cur_interval[0], cur_interval[1]
@@ -134,29 +134,27 @@ class EntityProperty:
     @property
     def borders(self) -> list:
         return self.__borders
+    
+
+    @property
+    def possible_values(self) -> list:
+        return self.__possible_values
+    
+
+    @property
+    def normal_value(self) -> list:
+        return self.__normal_value
 
 
 class Entity:
-    def __init__(self, alias: str, namesake_features: list, random_gen: RandomGenerator, types_count: int, property_count: int = 6) -> None:
-        self.__rng = default_rng()
+    def __init__(self, alias: str, namesake_features: list, property_aliases: list, random_gen: RandomGenerator, types_count: int) -> None:
         self.__random_gen = RandomGenerator(random_gen.range[0], random_gen.range[1], random_gen.use_one)
         
         self.__alias = alias
-        self.__property_count = property_count
         self.__entity_properties = namesake_features.copy()
 
-        len_namesake_features = len(namesake_features)
-
-        with open('data/symptom_names.txt', 'r') as input:
-            property_aliases = input.read().split('\n')
-
-        if len(property_aliases) < self.__property_count:
-            raise ValueError("Properties count more then all possible properties.")
-        else:
-            aliases_positions = self.__rng.choice(len(property_aliases), size=self.__property_count - len_namesake_features, replace=False)
-
-        for i in range(self.__property_count - len_namesake_features):
-            self.__entity_properties.append(EntityProperty(property_aliases[aliases_positions[i]], 
+        for i in range(len(property_aliases)):
+            self.__entity_properties.append(EntityProperty(property_aliases[i], 
                                                            self.__random_gen.randint(), i % types_count))
 
 
