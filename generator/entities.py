@@ -27,7 +27,10 @@ class EntityProperty:
 
         for i in range(self.number_trend_periods):
             borders = sort(self.__rng.choice(range(1, MAX_BORDER), size=2, replace=False))
-                    
+            
+            while borders[1] - borders[0] < 4:
+                borders = sort(self.__rng.choice(range(1, MAX_BORDER), size=2, replace=False))
+
             if lower_bound_one:
                 while borders[0] == 1:
                     borders = sort(self.__rng.choice(range(1, MAX_BORDER), size=2, replace=False))
@@ -159,7 +162,7 @@ class Entity:
 
 
     def __str__(self) -> str:
-        property_aliases = '\n'.join([str(i.alias) + ' ' + str(i.number_trend_periods) for i in self.__entity_properties])
+        property_aliases = '\n'.join([str(i.alias) for i in self.__entity_properties])
 
         return f'''Болезнь: {self.__alias}\n\nСимптомы:\n{property_aliases}'''
     
