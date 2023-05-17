@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import secrets
+import numpy as np
+
 from decouple import config
 from generator.mkb import MKB
 from generator.entities import Entity
@@ -7,9 +10,10 @@ from generator.random_generator import RandomGenerator
 
 
 CLASS_INSTANCES_COUNT = int(config('CLASS_INSTANCES_COUNT'))
-COUNT_MOMENTS_OBSERVATION = int(config('COUNT_MOMENTS_OBSERVATION'))
+COUNT_MOMENTS_OBSERVATION = int(config('COUNT_MOMENTS_OBSERVATION')) + 1
 
 
+# Model data set
 class MDS:
     def __init__(self, mkb: MKB) -> None:
         self.__mkb = mkb
@@ -43,9 +47,12 @@ class ClassInstances:
         self.__observation_moments_numbers = []
 
         for i, property in enumerate(self.__main_entity.properties):
-            rand_gen_om = RandomGenerator(1, COUNT_MOMENTS_OBSERVATION + 1)
+            rand_gen_om = RandomGenerator(1, COUNT_MOMENTS_OBSERVATION)
             sum_observation_moments = 1
             for border, val_period in zip(property.borders, property.value_period):
+                if not isinstance(val_period, list):
+                    val_period = [val_period]
+
                 rand_gen_dp = RandomGenerator(border[0], border[1])
                 tmp_duration_period = rand_gen_dp.randint()
                 self.__duration_period.append(tmp_duration_period)
@@ -65,7 +72,11 @@ class ClassInstances:
                         rand_observation_moment = rand_gen.randint()
                     
                     tmp_observation_moments.append(rand_observation_moment)
-                    tmp_observation_moments_val.append(val_period)
+
+                    if type(val_period[0]) is np.ndarray:
+                        tmp_observation_moments_val.append(secrets.choice(range(val_period[0][0], val_period[0][1] + 1)))
+                    else:
+                        tmp_observation_moments_val.append(secrets.choice(val_period))
 
                 self.__observation_moments += sorted(tmp_observation_moments)
                 self.__observation_moments_counts.append(len(tmp_observation_moments))

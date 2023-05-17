@@ -7,7 +7,7 @@ from generator.random_generator import RandomGenerator
 
 
 MIN_TREND_PERIOD = int(config('MIN_TREND_PERIOD'))
-MAX_TREND_PERIOD = int(config('MAX_TREND_PERIOD'))
+MAX_TREND_PERIOD = int(config('MAX_TREND_PERIOD')) + 1
 
 TYPES_COUNT = int(config('TYPES_COUNT'))
 

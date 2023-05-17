@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from generator.mkb import MKB
 from generator.mds import MDS
+from generator.ikb import IKB
 
 import xlsxwriter as xw
 
@@ -97,6 +98,9 @@ class GeneratorXLSX:
                 duration_offset += len(property.value_period)
                 offset += property.ntp - 1
 
+
+    def add_ikb_sheet(self, ikb: IKB) -> None:
+        raise NotImplementedError()
 
 
     def close(self) -> None:
