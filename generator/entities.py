@@ -53,7 +53,7 @@ class EntityProperty:
         elif type == 1:
             self.__type = 'enumerate'
 
-            with open('data/possible_values_of_symptom.txt', 'r') as input:
+            with open('data/possible_values_of_symptom.txt', 'r', encoding='utf-8') as input:
                 possible_val = input.read().split('\n')
 
             if len(possible_val) < ENUMERATE_COUNT:

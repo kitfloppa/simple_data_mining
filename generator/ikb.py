@@ -28,7 +28,7 @@ class Alternative:
 
         self.__ntp_instances[1].append(VDP(property_data, 1, [0]))
         
-        sep = [0]
+        sep = [0, 0]
 
         while sep[0] != len(property_data.vals):
             vdp = VDP(property_data, 2, sep)
@@ -38,6 +38,17 @@ class Alternative:
                 break
             else:
                 self.__ntp_instances[2].append(vdp)
+                
+        sep = [0, 0]
+        
+        while sep[0] != len(property_data.vals):
+            vdp = VDP(property_data, 3, sep)
+            sep = vdp.sep
+    
+            if 0 in sep:
+                break
+            else:
+                self.__ntp_instances[3].append(vdp)
 
 
         for i in self.__ntp_instances[1]:
@@ -45,11 +56,11 @@ class Alternative:
         print()
         for i in self.__ntp_instances[2]:
             print(i)
+        print()
+        for i in self.__ntp_instances[3]:
+            print(i)
 
         
-
-
-
 class PropertyData:
     def __init__(self, class_instances: ClassInstances, propery_alias: str) -> None:
         self.__property_vals = []
@@ -99,18 +110,8 @@ class VDP:
             sep = [0]
             flag = False
             for i in range(self.__sep[0] + 1, len(property_data.vals)):
-                sep = [0]
-                flag = False
-                for j in property_data.vals[:i]:
-                    if j in property_data.vals[i:]:
-                        flag = True
-                        sep = [0]
-                        break
-                if not flag:
-                    sep = [i]
-                    break
-                
-                if sep[0] != 0:
+                if len(list(set(property_data.vals[:i]) & set(property_data.vals[i:]))) == 0:
+                    sep[0] = i
                     break
 
             if sep[0] != 0:
@@ -122,12 +123,27 @@ class VDP:
             self.__sep = sep
         elif ntp == 3:
             sep = [0, 0]
-
+            flag = False
             for i in range(self.__sep[0] + 1, len(property_data.vals)):
-                for j in range(i, len(property_data.vals) - i):
-                    property_data.vals[:i]
-                    property_data.vals[i:i + j]
-                    property_data.vals[i + j:]
+                for j in range(i + 1, len(property_data.vals)):
+                    #print(property_data.vals[:i], property_data.vals[i:j], property_data.vals[j:])
+                    if len(list(set(property_data.vals[:i]) & set(property_data.vals[i:j]))) + len(list(set(property_data.vals[i:j]) & set(property_data.vals[j:]))) == 0:
+                        sep = [i, j]
+                        flag = True
+                        break
+                if flag:
+                    break
+            
+            if 0 not in sep:
+                self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[0]:sep[1]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[1]:]).tolist())
+                self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[1]:]) + min(property_data.om[sep[1]:])) // 2] * 2)
+                
+            self.__sep = sep
+                    
 
 
     def __str__(self) -> str:

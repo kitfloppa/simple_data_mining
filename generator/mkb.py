@@ -22,7 +22,7 @@ class MKB:
         self.__property_aliases = []
         self.__namesake_property = []
 
-        with open('data/namesake_features.txt', 'r') as input:
+        with open('data/namesake_features.txt', 'r', encoding='utf-8') as input:
             aliases = input.read().split('\n')
 
         aliases_positions = self.__rng.choice(len(aliases), size=namesake_property_count, replace=False)
@@ -31,7 +31,7 @@ class MKB:
             self.__namesake_property.append(EntityProperty(aliases[aliases_positions[i]], 
                                                            self.__random_gen.randint(), i % TYPES_COUNT))
 
-        with open('data/disease_names.txt', 'r') as input:
+        with open('data/disease_names.txt', 'r', encoding='utf-8') as input:
             aliases = input.read().split('\n')
 
         if len(aliases) < entity_count:
@@ -39,7 +39,7 @@ class MKB:
         else:
             entity_aliases_positions = self.__rng.choice(len(aliases), size=entity_count, replace=False)
 
-        with open('data/symptom_names.txt', 'r') as input:
+        with open('data/symptom_names.txt', 'r', encoding='utf-8') as input:
             property_aliases = input.read().split('\n')
 
         if len(property_aliases) < property_count:

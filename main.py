@@ -13,11 +13,10 @@ def main() -> None:
 
     Alternative(mds.class_instances[0], 'Кашель')
     
-    #xlsx = GeneratorXLSX('test')
-    #xlsx.add_mkb_sheet(mkb)
-    #xlsx.add_mds_sheet(mds)
-    #xlsx.close()
-
+    xlsx = GeneratorXLSX('test')
+    xlsx.add_mkb_sheet(mkb)
+    xlsx.add_mds_sheet(mds)
+    xlsx.close()
 
 
 if __name__ == '__main__':
