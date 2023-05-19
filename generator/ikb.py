@@ -50,6 +50,27 @@ class Alternative:
             else:
                 self.__ntp_instances[3].append(vdp)
 
+        sep = [0, 0, 0]
+        
+        while sep[0] != len(property_data.vals):
+            vdp = VDP(property_data, 4, sep)
+            sep = vdp.sep
+    
+            if 0 in sep:
+                break
+            else:
+                self.__ntp_instances[4].append(vdp)
+
+        sep = [0, 0, 0, 0]
+        
+        while sep[0] != len(property_data.vals):
+            vdp = VDP(property_data, 5, sep)
+            sep = vdp.sep
+    
+            if 0 in sep:
+                break
+            else:
+                self.__ntp_instances[5].append(vdp)
 
         for i in self.__ntp_instances[1]:
             print(i)
@@ -58,6 +79,12 @@ class Alternative:
             print(i)
         print()
         for i in self.__ntp_instances[3]:
+            print(i)
+        print()
+        for i in self.__ntp_instances[4]:
+            print(i)
+        print()
+        for i in self.__ntp_instances[5]:
             print(i)
 
         
@@ -105,7 +132,7 @@ class VDP:
 
         if ntp == 1:
             self.__data.append(np.unique(property_data.vals).tolist())
-            self.__border.append([(max(property_data.om) + min(property_data.om)) // 2] * 2)
+            self.__border.append([max(property_data.om)] * 2)
         elif ntp == 2:
             sep = [0]
             flag = False
@@ -124,13 +151,18 @@ class VDP:
         elif ntp == 3:
             sep = [0, 0]
             flag = False
+            
+            if self.__sep[0] >= 1 and self.__sep[1] < len(property_data.vals):
+                self.__sep[0] -= 1
+
             for i in range(self.__sep[0] + 1, len(property_data.vals)):
                 for j in range(i + 1, len(property_data.vals)):
-                    #print(property_data.vals[:i], property_data.vals[i:j], property_data.vals[j:])
-                    if len(list(set(property_data.vals[:i]) & set(property_data.vals[i:j]))) + len(list(set(property_data.vals[i:j]) & set(property_data.vals[j:]))) == 0:
-                        sep = [i, j]
-                        flag = True
-                        break
+                    if j > self.__sep[1]:
+                        if len(list(set(property_data.vals[:i]) & set(property_data.vals[i:j]))) + len(list(set(property_data.vals[i:j]) & set(property_data.vals[j:]))) == 0:
+                            sep = [i, j]
+                            flag = True
+                            break
+                self.__sep[1] = 0
                 if flag:
                     break
             
@@ -141,7 +173,85 @@ class VDP:
                 self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
                 self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
                 self.__border.append([(max(property_data.om[sep[1]:]) + min(property_data.om[sep[1]:])) // 2] * 2)
+
+
+            self.__sep = sep
+        elif ntp == 4:
+            sep = [0, 0, 0]
+
+            if self.__sep[0] >= 1 and self.__sep[1] < len(property_data.vals) and self.__sep[2] < len(property_data.vals):
+                self.__sep[0] -= 1
+
+            flag = False
+            for i in range(self.__sep[0] + 1, len(property_data.vals)):
+                for j in range(i + 1, len(property_data.vals)):
+                    if j > self.__sep[1]:
+                        for k in range(j + 1, len(property_data.vals)):
+                            if k > self.__sep[2]:
+                                if len(list(set(property_data.vals[:i]) & set(property_data.vals[i:j]))) + len(list(set(property_data.vals[i:j]) & set(property_data.vals[j:k]))) + \
+                                len(list(set(property_data.vals[j:k]) & set(property_data.vals[k:]))) == 0:
+                                    sep = [i, j, k]
+                                    flag = True
+                                    break
+                        self.__sep[2] = 0
+                        if flag:
+                            break
+                self.__sep[1] = 0
+                if flag:
+                    break
+
+            if 0 not in sep:
+                self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[0]:sep[1]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[1]:sep[2]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[2]:]).tolist())
+                self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[1]:sep[2]]) + min(property_data.om[sep[1]:])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[2]:]) + min(property_data.om[sep[1]:])) // 2] * 2)
                 
+            self.__sep = sep
+        elif ntp == 5:
+            sep = [0, 0, 0, 0]
+
+            if self.__sep[0] >= 1 and self.__sep[1] < len(property_data.vals) and self.__sep[2] < len(property_data.vals) and self.__sep[3] < len(property_data.vals):
+                self.__sep[0] -= 1
+
+            flag = False
+            for i in range(self.__sep[0] + 1, len(property_data.vals)):
+                for j in range(i + 1, len(property_data.vals)):
+                    if j > self.__sep[1]:
+                        for k in range(j + 1, len(property_data.vals)):
+                            if k > self.__sep[2]:
+                                for h in range(k + 1, len(property_data.vals)):
+                                    if h > self.__sep[3]:
+                                        if len(list(set(property_data.vals[:i]) & set(property_data.vals[i:j]))) + len(list(set(property_data.vals[i:j]) & set(property_data.vals[j:k]))) + \
+                                        len(list(set(property_data.vals[j:k]) & set(property_data.vals[k:h]))) + len(list(set(property_data.vals[k:h]) & set(property_data.vals[h:]))) == 0:
+                                            sep = [i, j, k, h]
+                                            flag = True
+                                            break
+                                self.__sep[3] = 0
+                                if flag:
+                                    break
+                        self.__sep[2] = 0
+                        if flag:
+                            break
+                self.__sep[1] = 0
+                if flag:
+                        break
+            
+            if 0 not in sep:
+                self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[0]:sep[1]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[1]:sep[2]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[2]:sep[3]]).tolist())
+                self.__data.append(np.unique(property_data.vals[sep[3]:]).tolist())
+                self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[1]:sep[2]]) + min(property_data.om[sep[1]:sep[2]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[2]:sep[3]]) + min(property_data.om[sep[2]:sep[3]])) // 2] * 2)
+                self.__border.append([(max(property_data.om[sep[3]:]) + min(property_data.om[sep[3]:])) // 2] * 2)   
+            
             self.__sep = sep
                     
 
@@ -153,3 +263,8 @@ class VDP:
     @property
     def sep(self) -> list:
         return self.__sep
+    
+
+    class MergingAlternatives:
+        def __init__(self, alternative_1: Alternative, alternative_2: Alternative, ntp: int) -> None:
+            
