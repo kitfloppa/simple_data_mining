@@ -3,6 +3,8 @@ from __future__ import annotations
 import numpy as np
 
 from decouple import config
+from generator.mkb import MKB
+from generator.mds import MDS
 from collections import defaultdict
 from generator.mds import ClassInstances
 
@@ -10,11 +12,29 @@ from generator.mds import ClassInstances
 MIN_TREND_PERIOD = int(config('MIN_TREND_PERIOD'))
 MAX_TREND_PERIOD = int(config('MAX_TREND_PERIOD'))
 
+CLASS_INSTANCES_COUNT = int(config('CLASS_INSTANCES_COUNT'))
+
 
 # Inductive knowledge base
 class IKB:
-    def __init__(self) -> None:
-        raise NotImplementedError()
+    def __init__(self, mkb: MKB, mds: MDS) -> None:
+        entity_len = len(mkb.entity)
+        self.__alternative_class_instances = []
+        
+        for i in range(entity_len):
+            for j in range(CLASS_INSTANCES_COUNT):
+                self.__alternative_class_instances.append(AlternativeClassInstances(mds.class_instances[i * entity_len + j]))
+    
+    
+    def __str__(self) -> str:
+        print(self.__alternative_class_instances[0].alternative_property['Кашель'])
+        
+        return ''
+    
+    
+    @property
+    def alternative_class_instances(self) -> list:
+        return self.__alternative_class_instances
     
 
 
@@ -71,7 +91,11 @@ class Alternative:
                 break
             else:
                 self.__ntp_instances[5].append(vdp)
-
+                
+    
+    def __str__(self) -> str:
+        res = ''
+        
         for i in self.__ntp_instances[1]:
             print(i)
         print()
@@ -86,6 +110,8 @@ class Alternative:
         print()
         for i in self.__ntp_instances[5]:
             print(i)
+        
+        return res
 
         
 class PropertyData:
@@ -264,7 +290,22 @@ class VDP:
     def sep(self) -> list:
         return self.__sep
     
+    
+class AlternativeClassInstances:
+    def __init__(self, class_instance: ClassInstances) -> None:
+        self.__alternative_property = {}
+        
+        for property in class_instance.properties:
+            self.__alternative_property[property.alias] = Alternative(class_instance, property.alias)
+            
+            
+    @property
+    def alternative_property(self) -> dict:
+        return self.__alternative_property
+            
 
-    class MergingAlternatives:
-        def __init__(self, alternative_1: Alternative, alternative_2: Alternative, ntp: int) -> None:
+class MergingAlternatives:
+    def __init__(self, alternative_class_instances: list) -> None:
+        
+        print()
             

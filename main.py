@@ -2,16 +2,18 @@ from __future__ import annotations
 
 from generator.mkb import MKB
 from generator.mds import MDS
+from generator.ikb import IKB
 from xlsx_maker import GeneratorXLSX
 
-
-from generator.ikb import PropertyData, Alternative
 
 def main() -> None:
     mkb = MKB()
     mds = MDS(mkb)
-
-    Alternative(mds.class_instances[0], 'Кашель')
+    ikb = IKB(mkb, mds)
+    
+    
+    print(ikb)
+    
     
     xlsx = GeneratorXLSX('test')
     xlsx.add_mkb_sheet(mkb)
