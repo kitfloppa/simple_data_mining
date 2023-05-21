@@ -11,13 +11,10 @@ def main() -> None:
     mds = MDS(mkb)
     ikb = IKB(mkb, mds)
     
-    
-    print(ikb)
-    
-    
     xlsx = GeneratorXLSX('test')
     xlsx.add_mkb_sheet(mkb)
     xlsx.add_mds_sheet(mds)
+    xlsx.add_ikb_sheet(ikb)
     xlsx.close()
 
 

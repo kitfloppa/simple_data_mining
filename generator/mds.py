@@ -38,7 +38,7 @@ class MDS:
 
 class ClassInstances:
     def __init__(self, entity: Entity, number: int) -> None:
-        self.__alias = 'Экземпляр ' + entity.alias + ' - ' + str(number)
+        self.__alias = 'ИБ ' + str(number) + ' ' + entity.alias
         self.__main_entity = entity
         self.__duration_period = []
         self.__observation_moments = []

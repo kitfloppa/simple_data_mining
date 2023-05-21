@@ -100,7 +100,29 @@ class GeneratorXLSX:
 
 
     def add_ikb_sheet(self, ikb: IKB) -> None:
-        raise NotImplementedError()
+        self.__ikb_sheet = self.__workbook.add_worksheet('ИФБЗ')
+
+        column_format = self.__workbook.add_format({'bold': True, 'bg_color': '#9fdf9f', 'border': 1})
+        cell_format = self.__workbook.add_format({'bg_color': '#9fdf9f', 'border': 1, 'text_wrap': True, 'valign': 'top'})
+        
+        self.__ikb_sheet.write('A1', 'Итерация ИФБЗ', column_format)
+        self.__ikb_sheet.write('B1', 'Заболевания', column_format)
+        self.__ikb_sheet.write('C1', 'Признаки', column_format)
+        self.__ikb_sheet.write('D1', 'Альтернативы', column_format)
+        self.__ikb_sheet.write('E1', 'ЧПД', column_format)
+        self.__ikb_sheet.write('F1', 'Период', column_format)
+        self.__ikb_sheet.write('G1', 'НГ-ВГ', column_format)
+        self.__ikb_sheet.write('H1', 'ВЗ', column_format)
+        
+        
+        for i, iter in enumerate(ikb.iterations):
+            for j, key in enumerate(iter.keys()):
+                for k, prop in enumerate(iter[key].alternative_property.keys()):
+                    self.__ikb_sheet.write(i * len(ikb.iterations) + j * len(iter.keys()) + k + 1, 0, 'Итерация - ' + str(i + 1), cell_format)
+                    self.__ikb_sheet.write(i * len(ikb.iterations) + j * len(iter.keys()) + k + 1, 1, key, cell_format)
+                    #iter[key].alternative_property[prop]
+        
+        
 
 
     def close(self) -> None:
