@@ -34,11 +34,9 @@ class IKB:
                 if mkb.entity[i].alias not in merging_alternatives.keys():
                     merging_alternatives[mkb.entity[i].alias] = self.__alternative_class_instances[i * entity_len + j]
                     self.__ikb_iterations.append(deepcopy(merging_alternatives))
-                    break
                 else:
                     merging_alternatives[mkb.entity[i].alias] = merging_alternatives[mkb.entity[i].alias] + self.__alternative_class_instances[i * entity_len + j]
                     self.__ikb_iterations.append(deepcopy(merging_alternatives))
-            break
     
     
     def __str__(self) -> str:
@@ -150,9 +148,16 @@ class Alternative:
             if i in self.__ntp_instances.keys() and i in other.__ntp_instances.keys():
                 for j in self.__ntp_instances[i]:
                     for k in other.__ntp_instances[i]:
-                        new_class.__ntp_instances[i].append(j + k)
+                        vdp = j + k
+                        if not vdp.delet:
+                            new_class.__ntp_instances[i].append(j + k)
         
         return new_class
+    
+
+    @property
+    def ntp_instances(self) -> defaultdict:
+        return self.__ntp_instances
 
         
 class PropertyData:
@@ -201,6 +206,7 @@ class VDP:
             self.__sep = sep
             self.__data = []
             self.__border = []
+            self.__delet = False
 
             if ntp == 1:
                 self.__data.append(np.unique(property_data.vals).tolist())
@@ -214,8 +220,8 @@ class VDP:
                         break
 
                 if sep[0] != 0:
-                    self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[0]:]).tolist())
+                    self.__data.append(list(set(property_data.vals[:sep[0]])))
+                    self.__data.append(list(set(property_data.vals[sep[0]:])))
                     self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[0]:]) + min(property_data.om[sep[0]:])) // 2] * 2)
 
@@ -239,9 +245,9 @@ class VDP:
                         break
                 
                 if 0 not in sep:
-                    self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[0]:sep[1]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[1]:]).tolist())
+                    self.__data.append(list(set(property_data.vals[:sep[0]])))
+                    self.__data.append(list(set(property_data.vals[sep[0]:sep[1]])))
+                    self.__data.append(list(set(property_data.vals[sep[1]:])))
                     self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[1]:]) + min(property_data.om[sep[1]:])) // 2] * 2)
@@ -273,10 +279,10 @@ class VDP:
                         break
 
                 if 0 not in sep:
-                    self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[0]:sep[1]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[1]:sep[2]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[2]:]).tolist())
+                    self.__data.append(list(set(property_data.vals[:sep[0]])))
+                    self.__data.append(list(set(property_data.vals[sep[0]:sep[1]])))
+                    self.__data.append(list(set(property_data.vals[sep[1]:sep[2]])))
+                    self.__data.append(list(set(property_data.vals[sep[2]:])))
                     self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[1]:sep[2]]) + min(property_data.om[sep[1]:])) // 2] * 2)
@@ -313,11 +319,11 @@ class VDP:
                             break
                 
                 if 0 not in sep:
-                    self.__data.append(np.unique(property_data.vals[:sep[0]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[0]:sep[1]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[1]:sep[2]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[2]:sep[3]]).tolist())
-                    self.__data.append(np.unique(property_data.vals[sep[3]:]).tolist())
+                    self.__data.append(list(set(property_data.vals[:sep[0]])))
+                    self.__data.append(list(set(property_data.vals[sep[0]:sep[1]])))
+                    self.__data.append(list(set(property_data.vals[sep[1]:sep[2]])))
+                    self.__data.append(list(set(property_data.vals[sep[2]:sep[3]])))
+                    self.__data.append(list(set(property_data.vals[sep[3]:])))
                     self.__border.append([(max(property_data.om[:sep[0]]) + min(property_data.om[:sep[0]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[0]:sep[1]]) + min(property_data.om[sep[0]:sep[1]])) // 2] * 2)
                     self.__border.append([(max(property_data.om[sep[1]:sep[2]]) + min(property_data.om[sep[1]:sep[2]])) // 2] * 2)
@@ -330,16 +336,28 @@ class VDP:
             self.__sep = []
             self.__data = []
             self.__border = []
+            self.__delet = False
                     
 
     def __add__(self, other: VDP) -> VDP:
         new_class = VDP()
         new_class.__sep = self.__sep
+        new_class.__delet = False
         
         for i in range(len(self.__data)):
-            new_class.__data.append(list(set(self.__data[i] + other.__data[i])))
+            print(set(self.__data[i] + other.__data[i]))
+            new_class.__data.append(sorted(list(set(self.__data[i] + other.__data[i]))))
             new_class.__border.append([min(self.__border[i] + other.__border[i]), max(self.__border[i] + other.__border[i])])
-        
+
+        for i in range(len(self.__data) - 1):
+            if len(list(set(new_class.__data[i]) & set(new_class.__data[i + 1]))) != 0:
+                new_class.__delet = True
+
+            if isinstance(new_class.__data[i][0], int) and sum(new_class.__data[i]) > 1:
+                if len(list(set(range(min(new_class.__data[i]), max(new_class.__data[i]) + 1)) & \
+                    set(range(min(new_class.__data[i + 1]), max(new_class.__data[i + 1]) + 1)))) != 0:
+                    new_class.__delet = True
+
         return new_class
     
 
@@ -350,6 +368,21 @@ class VDP:
     @property
     def sep(self) -> list:
         return self.__sep
+    
+
+    @property
+    def data(self) -> list:
+        return self.__data
+    
+
+    @property
+    def border(self) -> list:
+        return self.__border
+    
+
+    @property
+    def delet(self) -> bool:
+        return self.__delet
     
     
 class AlternativeClassInstances:

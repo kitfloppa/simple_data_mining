@@ -15,6 +15,7 @@ def main() -> None:
     xlsx.add_mkb_sheet(mkb)
     xlsx.add_mds_sheet(mds)
     xlsx.add_ikb_sheet(ikb)
+    xlsx.add_comparison_sheet(mkb, ikb)
     xlsx.close()
 
 

@@ -49,7 +49,7 @@ class ClassInstances:
         for i, property in enumerate(self.__main_entity.properties):
             rand_gen_om = RandomGenerator(1, COUNT_MOMENTS_OBSERVATION)
             sum_observation_moments = 1
-            for border, val_period in zip(property.borders, property.value_period):
+            for border, val_period in zip(property.borders, property.value_period): # type: ignore
                 if not isinstance(val_period, list):
                     val_period = [val_period]
 
