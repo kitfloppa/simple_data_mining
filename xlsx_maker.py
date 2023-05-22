@@ -155,7 +155,9 @@ class GeneratorXLSX:
         self.__comparison_sheet.merge_range('E1:G1', 'Число периодов динамики (ИФБЗ)', column_format) # type: ignore
         self.__comparison_sheet.merge_range('I1:L1', 'Значения для периода (МБЗ)', column_format) # type: ignore
         self.__comparison_sheet.merge_range('N1:Q1', 'Значения для периода (ИФБЗ)', column_format) # type: ignore
-        
+        self.__comparison_sheet.merge_range('S1:V1', 'Верхние и нижние границы (НГ и ВГ) (МБЗ)', column_format) # type: ignore
+        self.__comparison_sheet.merge_range('X1:AA1', 'Верхние и нижние границы (НГ и ВГ) (ИФБЗ)', column_format) # type: ignore
+
         offset = 0
         offset_2 = 0
         offset_3 = 0
@@ -177,6 +179,11 @@ class GeneratorXLSX:
                     self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 9, entity_property.alias, cell_format)
                     self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 10, k + 1, cell_format)
                     self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 11, str(entity_property.value_period[k]), cell_format)
+
+                    self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 18, entity.alias, cell_format)
+                    self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 19, entity_property.alias, cell_format)
+                    self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 20, k + 1, cell_format)
+                    self.__comparison_sheet.write(i * len(entity.properties) + j + offset_2 + k + 1, 21, str(entity_property.borders[k]), cell_format)
                 offset_2 += entity_property.ntp - 1
 
         for i, key in enumerate(ikb.iterations[-1].keys()):
@@ -205,6 +212,11 @@ class GeneratorXLSX:
                                     self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 16, str([min(d), max(d)]), cell_format)
                                 else:
                                     self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 16, str(d), cell_format)
+
+                                self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 23, key, cell_format)
+                                self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 24, prop, cell_format)
+                                self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 25, step, cell_format)
+                                self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 26, str(b), cell_format)
                                 step += 1
                                 offset_3 += 1
                     else:
@@ -212,7 +224,12 @@ class GeneratorXLSX:
                             self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 13, key, cell_format)
                             self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 14, prop, cell_format)
                             self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 15, h + 1, cell_format)
-                            self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 15, '', cell_format)
+                            self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 16, '', cell_format)
+                            
+                            self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 23, key, cell_format)
+                            self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 24, prop, cell_format)
+                            self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 25, h + 1, cell_format)
+                            self.__comparison_sheet.write(i * len(ikb.iterations[-1][key].alternative_property.keys()) + j + offset_3 + 1, 26, '', cell_format)
                             offset_3 += 1
                     offset_3 -= 1
 
